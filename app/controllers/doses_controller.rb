@@ -1,44 +1,31 @@
 class DosesController < ApplicationController
-  def index
-    @doses = Dose.all
-  end
-
-  def show
-    @dose = Dose.find(params[:id])
-  end
-
-  def new
+    def new
+    # we need @cocktail in our `simple_form_for`
+    @cocktail = Cocktail.find(params[:cocktail_id])
     @dose = Dose.new
   end
 
   def create
     @dose = Dose.new(dose_params)
+    # we need `cocktail_id` to associate dose with corresponding cocktail
+    @cocktail = Cocktail.find(params[:cocktail_id])
+    @dose.cocktail = @cocktail
     if @dose.save
-      redirect_to dose_path(@dose)
+      redirect_to cocktail_path(@cocktail)
     else
       render :new
     end
   end
 
-  def edit
-    @dose = Dose.find(params[:id])
-  end
-
-   def update
-    @dose = Dose.find(params[:id])
-    @dose.update(dose_params)
-    redirect_to dose_path(@dose)
-  end
-
   def destroy
     @dose = Dose.find(params[:id])
     @dose.destroy
-    redirect_to doses_path
+    redirect_to cocktail_path(@dose.cocktail)
   end
 
-   private
+  private
 
   def dose_params
-    params.require(:dose).permit(:description)
+    params.require(:dose).permit(:description, :ingredient_id)
   end
 end
